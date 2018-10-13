@@ -3,8 +3,8 @@ import time, threading
 
 sense = SenseHat()
 sense.set_imu_config(True, True, True)
-
 THRESHOLD = 1.0
+
 
 def leds_green():
     green = [0, 255, 0]
@@ -13,7 +13,6 @@ def leds_green():
         all_green.append(green)
     sense.set_pixels(all_green)
 
-
 def leds_red():
     red = [255, 0, 0]
     all_red = []
@@ -21,17 +20,19 @@ def leds_red():
         all_green.append(red)
     sense.set_pixels(all_red)
 
+is_in_use = False
 
 def set_in_use():
+    is_in_use = True
     leds_green()
 
-
 def set_not_in_use():
+    is_in_use = False
     timer_started = False
     leds_red()
 
 
-tof_in_use = Timer(30.0, set_not_in_use)
+tof_in_use = Timer(3.0, set_not_in_use)
 timer_started = False
 
 
@@ -58,10 +59,13 @@ while True:
     old_sum_d = new_sum_d
 
     if pos_diff > TRESHOLD:
-        tof_in_use.cancel()
-        set_in_use()
+        if timer_started == True:
+            tof_in_use.cancel()
+        if is_in_use == False:
+            set_in_use()
     else:
         if timer_started = False:
             tof_in_use.start()
             timer_started = True
+
 
